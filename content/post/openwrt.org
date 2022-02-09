@@ -1,0 +1,168 @@
+---
+title: "Openwrt"
+date: 2019-08-09T20:00:11+08:00
+lastmod: 2019-08-09T20:00:11+08:00
+draft: false
+tags: [openwrt]
+categories: [tool]
+---
+
+没有小盒子,你如何在道上混? 在树莓派上刷 openwrt
+
+<!--more-->
+
+** 概述
+
+|----------+-------------------------------------------------------------------------------|
+| 硬件     | RASPBERRY PI 树莓派 3 代 B+ E14                                               |
+| 系统     | [[https://openwrt.org/][openwrt]]                                                                       |
+| 官网介绍 | https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi                  |
+| 固件地址 | https://downloads.openwrt.org/snapshots/targets/brcm2708/bcm2710/             |
+| extroot  | https://openwrt.org/docs/guide-user/additional-software/extroot_configuration |
+
+
+** 刷固件
+
+1. 从官方下载固件,因为 openwrt18.06.4 不支持树莓派 3b+,从而直接安装 snapshot,具体地址见上
+2. 下载之后可以对比固件的摘要,可通过 =sha256sum= 计算,并和官方摘要对比,防止下载过程被篡改
+3. 需要将固件刷到 SD 卡中,这个过程中,我使用的工具是 =Win32DiskImager= (使用 =dd= 没成功)
+
+** 配置网络
+*** network
+1. wan 主要用于连接外网,直接连接网线,网络为桥接模式
+2. wlan0 是无线网卡
+
+
+#+begin_src 
+config interface 'loopback'
+	option ifname 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config globals 'globals'
+	option ula_prefix 'fd05:750c:9897::/48'
+
+config interface 'wlan0'
+	option proto 'static'
+	option ipaddr '192.168.2.1'
+	option netmask '255.255.255.0'
+	option nat '1'
+
+config interface 'wan'
+	option proto 'dhcp'
+	option ifname 'eth0'
+	option type 'bridge'
+
+#+end_src
+
+*** wireless
+1. 无线配置过程中,需要国别码还有对应的 channel,不选择不能够正常打开 wifi
+2. 配置自己的无线配置时候,需要选择 wlan0 接口
+
+#+begin_src 
+config wifi-device 'radio0'
+	option type 'mac80211'
+	option path 'platform/soc/3f300000.mmcnr/mmc_host/mmc1/mmc1:0001/mmc1:0001:1'
+	option country 'CN'
+	option legacy_rates '1'
+	option txpower '0'
+	option channel '1'
+	option hwmode '11g'
+
+config wifi-iface
+	option device 'radio0'
+	option mode 'ap'
+	option ssid 'haormj2.4'
+	option network 'wlan0'
+	option encryption 'psk2'
+	option key 'haoshijie'
+
+#+end_src
+
+*** dhcp
+1. wan 通过桥接,需要 dhcp client,需要能够动态获取地址
+2. wlan0 需要 dhcp server,作为无线热点,能够连接者分配 IP 地址
+
+#+begin_src
+config dhcp 'wlan0'
+	option interface 'wlan0'
+	option start '100'
+	option limit '150'
+	option leasetime '12h'
+	option dhcpv6 'server'
+	option ra 'server'
+
+config dhcp 'wan'
+	option interface 'wan'
+	option ignore '1'
+ 
+#+end_src
+
+*** firewall
+1. 需要为上述的网络配置防火墙,需要注意的是 wan 口需要打开 masq,这样发送包前会进行源地址转化
+2. 还需要为 wlan0 到 wan 配置转发规则,这样 wifi 热点才能够增长使用
+
+#+begin_src 
+config zone
+	option name 'wlan0'
+	option input 'ACCEPT'
+	option forward 'ACCEPT'
+	option output 'ACCEPT'
+	option network 'wlan0'
+
+config zone
+	option name 'wan'
+	option input 'ACCEPT'
+	option forward 'ACCEPT'
+	option output 'ACCEPT'
+	option network 'wan'
+	option masq '1'
+	option mtu_fix 1
+
+config forwarding
+	option src 'wlan0'
+	option dest 'wan'
+#+end_src
+
+** 扩展磁盘
+
+|-------------+----------|
+| boot        | 64M      |
+| rootfs      | 128M     |
+| rootfs_data | 剩余大小 |
+
+
+1. 参考 extroot 文档
+2. 需要对 SD 卡进行分区,除了刷固件产生的两个分区外,剩余的继续分区,且格式为 ext4
+3. 按照文档中挂载 overlay
+4. 然后通过 =df -h= 查看是否挂载成功
+
+#+begin_src 
+config global
+	option anon_swap '0'
+	option anon_mount '0'
+	option auto_swap '1'
+	option auto_mount '1'
+	option delay_root '5'
+	option check_fs '0'
+
+config mount
+	option target '/mnt/mmcblk0p1'
+	option uuid '9A10-6EAB'
+	option enabled '0'
+
+config mount
+	option target '/mnt/mmcblk0p2'
+	option uuid '57f8f4bc-abf4-655f-bf67-946fc0f9f25b'
+	option enabled '0'
+
+config mount
+	option target '/mnt/mmcblk0p3'
+	option uuid '36945fb2-c2d7-467f-95a9-d45f81fae0ff'
+	ption enabled '0'
+
+config mount 'overlay'
+	option target '/overlay'
+	option device '/dev/mmcblk0p3'
+#+end_src

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on haormj</title>
+    <link>https://haormj.xyz/tags/</link>
+    <description>Recent content in Tags on haormj</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 09 Aug 2019 20:00:11 +0800</lastBuildDate><atom:link href="https://haormj.xyz/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>openwrt</title>
+      <link>https://haormj.xyz/tags/openwrt/</link>
+      <pubDate>Fri, 09 Aug 2019 20:00:11 +0800</pubDate>
+      
+      <guid>https://haormj.xyz/tags/openwrt/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>editor</title>
+      <link>https://haormj.xyz/tags/editor/</link>
+      <pubDate>Sun, 07 Jul 2019 10:39:23 +0800</pubDate>
+      
+      <guid>https://haormj.xyz/tags/editor/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

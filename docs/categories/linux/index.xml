@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>linux on haormj</title>
+    <link>https://haormj.xyz/categories/linux/</link>
+    <description>Recent content in linux on haormj</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 20 Jul 2019 17:06:46 +0800</lastBuildDate>
+    
+	<atom:link href="https://haormj.xyz/categories/linux/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>netfilter</title>
+      <link>https://haormj.xyz/post/netfilter/</link>
+      <pubDate>Sat, 20 Jul 2019 17:06:46 +0800</pubDate>
+      
+      <guid>https://haormj.xyz/post/netfilter/</guid>
+      <description>&lt;p&gt;
+netfilter is a set of hooks inside the Linux kernel that allows kernel modules to register callback functions with the network stack. A registered callback function is then called back for every packet that traverses the respective hook within the network stack.
+&lt;/p&gt;
+&lt;p&gt;
+netfilter 是 linux 内核中的一组回调函数,允许内核模块在网络栈上注册回调函数,每个包会遍历在网络栈上对应的回调点
+&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

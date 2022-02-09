@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on haormj</title>
+    <link>https://haormj.xyz/post/</link>
+    <description>Recent content in Posts on haormj</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 20 Oct 2019 23:20:09 +0800</lastBuildDate><atom:link href="https://haormj.xyz/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>最美的诗句</title>
+      <link>https://haormj.xyz/post/txt/</link>
+      <pubDate>Sun, 20 Oct 2019 23:20:09 +0800</pubDate>
+      
+      <guid>https://haormj.xyz/post/txt/</guid>
+      <description>&lt;p&gt;
+最美的诗句&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Raft</title>
+      <link>https://haormj.xyz/post/raft/</link>
+      <pubDate>Sun, 20 Oct 2019 16:12:05 +0800</pubDate>
+      
+      <guid>https://haormj.xyz/post/raft/</guid>
+      <description>&lt;p&gt;
+分布式一致性算法&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Openwrt</title>
+      <link>https://haormj.xyz/post/openwrt/</link>
+      <pubDate>Fri, 09 Aug 2019 20:00:11 +0800</pubDate>
+      
+      <guid>https://haormj.xyz/post/openwrt/</guid>
+      <description>&lt;p&gt;
+没有小盒子,你如何在道上混? 在树莓派上刷 openwrt&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>编辑器</title>
+      <link>https://haormj.xyz/post/editor/</link>
+      <pubDate>Sun, 07 Jul 2019 10:39:23 +0800</pubDate>
+      
+      <guid>https://haormj.xyz/post/editor/</guid>
+      <description>&lt;p&gt;
+作为软件开发人员,必然绕不过编辑器,现在有很多的集成开发环境,也有 emacs,vim 等工具,不同的人选择不同的编辑器,但是仔细想想到底是什么吸引着我们选择某一个编辑器?&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>循环中使用 goroutine</title>
+      <link>https://haormj.xyz/post/use_goroutine_in_for/</link>
+      <pubDate>Mon, 25 Mar 2019 19:07:00 +0800</pubDate>
+      
+      <guid>https://haormj.xyz/post/use_goroutine_in_for/</guid>
+      <description>&lt;p&gt;
+在循环中开启 goroutine，传递参数最好通过变量赋值，而不是利用函数闭包; 因为 goroutine 最终读取变量的时间是不确定的，从而 goroutine 中获取到变量的值不一定符合最初的预期。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>读锁嵌套导致死锁</title>
+      <link>https://haormj.xyz/post/rwmutex/</link>
+      <pubDate>Sat, 16 Feb 2019 23:38:00 +0800</pubDate>
+      
+      <guid>https://haormj.xyz/post/rwmutex/</guid>
+      <description>&lt;p&gt;
+golang 在使用读写锁时，切记出现读锁的嵌套，当程序在获取到第一个读锁的时候，此时执行了写锁，导致后续的读锁不能够获取，同样写锁也在等待第一个读锁的释放，从而造成死锁.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>panic: sql: Register called twice for driver mysql</title>
+      <link>https://haormj.xyz/post/panic_sql_register_called_twice_for_driver_mysql/</link>
+      <pubDate>Sun, 20 Jan 2019 22:07:00 +0800</pubDate>
+      
+      <guid>https://haormj.xyz/post/panic_sql_register_called_twice_for_driver_mysql/</guid>
+      <description>&lt;p&gt;
+go-sql-driver 包中包含 init 方法，只要导入包就会被执行，但是按照其实现，该包只能够被导入一次，但是因为 vendor 的作用，会出现该包出现被导入多次的情况，从而在使用次包的时候，最好不要添加 vendor&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

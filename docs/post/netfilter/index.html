@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>netfilter - haormj</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Ward Harris" /><meta name="description" content=" netfilter is a set of hooks inside the Linux kernel that allows kernel modules to register callback functions with the network stack. A registered callback function is then called back for every packet that traverses the respective hook within the network stack.  netfilter 是 linux 内核中的一组回调函数,允许内核模块在网络栈上注册回调函数,每个包会遍历在网络栈上对应的回调点 " /><meta name="keywords" content="haormj, blog, IT" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.56.0-DEV with even 4.0.0" />
+
+
+<link rel="canonical" href="https://haormj.xyz/post/netfilter/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="netfilter" />
+<meta property="og:description" content="
+netfilter is a set of hooks inside the Linux kernel that allows kernel modules to register callback functions with the network stack. A registered callback function is then called back for every packet that traverses the respective hook within the network stack.
+
+
+netfilter 是 linux 内核中的一组回调函数,允许内核模块在网络栈上注册回调函数,每个包会遍历在网络栈上对应的回调点
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://haormj.xyz/post/netfilter/" />
+<meta property="article:published_time" content="2019-07-20T17:06:46+08:00" />
+<meta property="article:modified_time" content="2019-07-20T17:06:46+08:00" />
+
+<meta itemprop="name" content="netfilter">
+<meta itemprop="description" content="
+netfilter is a set of hooks inside the Linux kernel that allows kernel modules to register callback functions with the network stack. A registered callback function is then called back for every packet that traverses the respective hook within the network stack.
+
+
+netfilter 是 linux 内核中的一组回调函数,允许内核模块在网络栈上注册回调函数,每个包会遍历在网络栈上对应的回调点
+">
+
+
+<meta itemprop="datePublished" content="2019-07-20T17:06:46&#43;08:00" />
+<meta itemprop="dateModified" content="2019-07-20T17:06:46&#43;08:00" />
+<meta itemprop="wordCount" content="1437">
+
+
+
+<meta itemprop="keywords" content="netfilter," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="netfilter"/>
+<meta name="twitter:description" content="
+netfilter is a set of hooks inside the Linux kernel that allows kernel modules to register callback functions with the network stack. A registered callback function is then called back for every packet that traverses the respective hook within the network stack.
+
+
+netfilter 是 linux 内核中的一组回调函数,允许内核模块在网络栈上注册回调函数,每个包会遍历在网络栈上对应的回调点
+"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Haormj</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">类别</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Haormj</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">类别</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">netfilter</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-07-20 </span>
+        <div class="post-category">
+            <a href="/categories/linux/"> linux </a>
+            </div>
+          <span class="more-meta"> 约 1437 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#headline-1">参考</a>
+</li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>
+netfilter is a set of hooks inside the Linux kernel that allows kernel modules to register callback functions with the network stack. A registered callback function is then called back for every packet that traverses the respective hook within the network stack.
+</p>
+<p>
+netfilter 是 linux 内核中的一组回调函数,允许内核模块在网络栈上注册回调函数,每个包会遍历在网络栈上对应的回调点
+</p>
+<p>
+什么是 netfilter? 为什么需要 netfilter? netfilter 如何维护和调优?
+</p>
+<p>
+首先搜索 netfilter 的资源,必须要到官网上看, 这样才能够得到第一手的消息,而不是被消化过的
+</p>
+<p>
+官网 看下有什么信息
+<a href="https://www.netfilter.org/">https://www.netfilter.org/</a>
+</p>
+<p>
+其实我最想找的就是 netfilter 的参数如何调优,我知道这个内核中的组件,也知道他是为了过滤包的,但是目前的问题就是 netfilter
+会占用哪些资源,在使用的过程中需要注意什么? 如何避免 netfilter 影响到业务服务器,如何保证业务服务器没有任何问题
+</p>
+<p>
+之前我也已经尝试了,如果出现问题,也就是忽略跟踪的时候,还是会出现 udp not operation 也就是和丢包有关系,还有一种可能
+</p>
+<p>
+raw 表只是在 prerouting output 我虽然忽略了进入的包,但是没有忽略发出去的包,从而当我两个都是忽略的时候,应该就是没有任何问题的
+</p>
+<p>
+目前我知道的 netfilter 就是对内存有消耗,还有什么 max/buckets 这些概念还不是很了解,从而需要对这些内容了如之掌,但是官网上我还没有看到
+</p>
+<p>
+从而我需要自己从 man 中寻找写内容,并且最好还需要知道如何调整内核参数,临时如何调整,持久化如何调整,以及出现问题后的处理步骤等等?
+</p>
+<p>
+这个是 netfilter/iptables 的简单介绍
+</p>
+<p>
+说明了 netfilter 是内核模块,提供了 5 个 hook 点
+</p>
+<p>
+iptables 利用了 netfilter 的 5 个 hook 点,并按照表和链来进行组织,方便包的处理
+</p>
+<p>
+其中 raw 表主要是为了让包不进入 netfilter 所用,出现在 prerouting 和 output 链
+</p>
+<p>
+https://arthurchiao.github.io/blog/deep-dive-into-iptables-and-netfilter-arch-zh/
+</p>
+<p>
+mangle 主要是用户修正包
+nat 是地址转化,当然也有端口转换
+filter 就是常用的包过滤
+</p>
+<p>
+其中表也是有优先级的
+raw &gt; mangle &gt; nat &gt; filter
+</p>
+<p>
+iptables 的每个链中包含的都是规则
+</p>
+<p>
+一个规则中有 match target
+match 就是如何匹配到对应的包, target 就是匹配到包之后应该如何做
+</p>
+<p>
+其中每个连接跟踪中还有记录每个连接的状态,这个无论是 tcp 还是 udp 都是适用的,只是 netfilter 自身记录的一个状态
+</p>
+<p>
+根据上述的链接就学习到以上内容.
+</p>
+<p>
+感觉了解的内容已经很清楚了,问题是 netfilter 如何进行参数调优,所以这里也是需要处理的,那么如何进行呢?
+</p>
+<p>
+还是应该直接搜索 netfilter 参数调优
+</p>
+<p>
+nf_conntrack: table full, dropping packet
+</p>
+<p>
+http://www.10tiao.com/html/488/201701/2247484116/1.html
+</p>
+<p>
+这个 table 满也是其中经常遇到的问题之一
+</p>
+<p>
+如何查看 nf_conntrack 跟踪的包? 为什么会有这个问题,平台 table 不是会满吗? 那么 table 中究竟存储了哪些内容? 是否可以直接查看呢?
+这个问题可以让我们更加直观的认识到包的本质
+</p>
+<p>
+其中 conntrack 就是一个工具,可以对内核的连接跟踪系统进行增删修查
+</p>
+<p>
+conntrack 直观的就是可以让我们知道目前的一些连接情况
+</p>
+<p>
+http://www.10tiao.com/html/488/201701/2247484116/1.html
+</p>
+<p>
+上面这个文章基本上
+</p>
+<p>
+1048576 * 300 + 262144 * 8 = 316669952 = 302M
+</p>
+<p>
+首先如何计算内存占用? 第二个如何计算最优的分配策略,也就是 max 应该配置为多少,官方也有公式,但是实际上还是可以通过内存占用来搞定
+</p>
+<p>
+搜索了一波也没有具体说什么内容,从而打算自己探索下,也就是如下的一些参数
+</p>
+<p>
+dccp 数据拥塞控制协议
+</p>
+<p>
+https://zh.wikipedia.org/wiki/%E6%95%B0%E6%8D%AE%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E5%8D%8F%E8%AE%AE
+</p>
+<p>
+sctp 流控制传输协议
+<a href="https://zh.wikipedia.org/zh-hans/">https://zh.wikipedia.org/zh-hans/</a>%E6%B5%81%E6%8E%A7%E5%88%B6%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE
+</p>
+<p>
+https://github.com/torvalds/linux/blob/master/Documentation/networking/nf_conntrack-sysctl.txt
+</p>
+<p>
+上面这个文档就是 linux 的内核的文档
+</p>
+<p>
+net.netfilter.nf_conntrack_acct = 0
+net.netfilter.nf_conntrack_buckets = 65536
+net.netfilter.nf_conntrack_checksum = 1
+net.netfilter.nf_conntrack_count = 86
+net.netfilter.nf_conntrack_events = 1
+net.netfilter.nf_conntrack_expect_max = 1024
+net.netfilter.nf_conntrack_generic_timeout = 600
+net.netfilter.nf_conntrack_helper = 0
+net.netfilter.nf_conntrack_log_invalid = 0
+net.netfilter.nf_conntrack_max = 262144
+net.netfilter.nf_conntrack_timestamp = 0
+</p>
+<p>
+net.netfilter.nf_conntrack_icmp_timeout = 30
+</p>
+<p>
+net.netfilter.nf_conntrack_tcp_be_liberal = 0
+net.netfilter.nf_conntrack_tcp_loose = 1
+net.netfilter.nf_conntrack_tcp_max_retrans = 3
+net.netfilter.nf_conntrack_tcp_timeout_close = 10
+net.netfilter.nf_conntrack_tcp_timeout_close_wait = 60
+net.netfilter.nf_conntrack_tcp_timeout_established = 432000
+net.netfilter.nf_conntrack_tcp_timeout_fin_wait = 120
+net.netfilter.nf_conntrack_tcp_timeout_last_ack = 30
+net.netfilter.nf_conntrack_tcp_timeout_max_retrans = 300
+net.netfilter.nf_conntrack_tcp_timeout_syn_recv = 60
+net.netfilter.nf_conntrack_tcp_timeout_syn_sent = 120
+net.netfilter.nf_conntrack_tcp_timeout_time_wait = 120
+net.netfilter.nf_conntrack_tcp_timeout_unacknowledged = 300
+</p>
+<p>
+net.netfilter.nf_conntrack_udp_timeout = 30
+net.netfilter.nf_conntrack_udp_timeout_stream = 180
+</p>
+<p>
+net.netfilter.nf_conntrack_dccp_loose = 1
+net.netfilter.nf_conntrack_dccp_timeout_closereq = 64
+net.netfilter.nf_conntrack_dccp_timeout_closing = 64
+net.netfilter.nf_conntrack_dccp_timeout_open = 43200
+net.netfilter.nf_conntrack_dccp_timeout_partopen = 480
+net.netfilter.nf_conntrack_dccp_timeout_request = 240
+net.netfilter.nf_conntrack_dccp_timeout_respond = 480
+net.netfilter.nf_conntrack_dccp_timeout_timewait = 240
+</p>
+<p>
+net.netfilter.nf_conntrack_sctp_timeout_closed = 10
+net.netfilter.nf_conntrack_sctp_timeout_cookie_echoed = 3
+net.netfilter.nf_conntrack_sctp_timeout_cookie_wait = 3
+net.netfilter.nf_conntrack_sctp_timeout_established = 432000
+net.netfilter.nf_conntrack_sctp_timeout_heartbeat_acked = 210
+net.netfilter.nf_conntrack_sctp_timeout_heartbeat_sent = 30
+net.netfilter.nf_conntrack_sctp_timeout_shutdown_ack_sent = 3
+net.netfilter.nf_conntrack_sctp_timeout_shutdown_recd = 0
+net.netfilter.nf_conntrack_sctp_timeout_shutdown_sent = 0
+</p>
+<p>
+net.netfilter.nf_log.0 = NONE
+net.netfilter.nf_log.1 = NONE
+net.netfilter.nf_log.10 = NONE
+net.netfilter.nf_log.11 = NONE
+net.netfilter.nf_log.12 = NONE
+net.netfilter.nf_log.2 = NONE
+net.netfilter.nf_log.3 = NONE
+net.netfilter.nf_log.4 = NONE
+net.netfilter.nf_log.5 = NONE
+net.netfilter.nf_log.6 = NONE
+net.netfilter.nf_log.7 = NONE
+net.netfilter.nf_log.8 = NONE
+net.netfilter.nf_log.9 = NONE
+net.netfilter.nf_log_all_netns = 0
+</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>net.netfilter.nf_conntrack_acct</td>
+<td></td>
+</tr>
+<tr>
+<td>net.netfilter.nf_conntrack_buckets</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>
+问题
+</p>
+<ol>
+<li>
+<p>
+netfilter 为什么需要桶?直接使用链表不可以吗?也就是使用什么存储结构合适一些呢? 
+</p>
+</li>
+</ol>
+<p>
+netfilter 使用 hashtable,这样当然是最快的,查询速率为 o(1), 但是这样对于内存的消耗很高,因为每个桶需要占用 300 个字节,而且应该是固定的,也就是在指定大小的时候就会分配内存
+</p>
+<p>
+如果使用了指针,那么是需要的时候才会分配,使用完毕后也就会释放,从而个人认为
+</p>
+<ol>
+<li>
+</li>
+</ol>
+<h2 id="headline-1">
+参考
+</h2>
+<ol>
+<li>
+<p>
+<a href="https://www.netfilter.org">netfilter</a>
+</p>
+</li>
+</ol>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Ward Harris</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-07-20
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/netfilter/">netfilter</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/xxx/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Xxx</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/make/">
+            <span class="next-text nav-default">Makefile</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:haormj@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/haormj" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/haormj" class="iconfont icon-github" title="github"></a>
+  <a href="https://haormj.xyz/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+    
+    
+    
+    
+    
+    
+    
+    
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Ward Harris</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

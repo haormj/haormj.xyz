@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Makefile - haormj</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Ward Harris" /><meta name="description" content="" /><meta name="keywords" content="haormj, blog, IT" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.56.0-DEV with even 4.0.0" />
+
+
+<link rel="canonical" href="https://haormj.xyz/post/make/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Makefile" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://haormj.xyz/post/make/" />
+<meta property="article:published_time" content="2019-07-13T10:09:54+08:00" />
+<meta property="article:modified_time" content="2019-07-13T10:09:54+08:00" />
+
+<meta itemprop="name" content="Makefile">
+<meta itemprop="description" content="">
+
+
+<meta itemprop="datePublished" content="2019-07-13T10:09:54&#43;08:00" />
+<meta itemprop="dateModified" content="2019-07-13T10:09:54&#43;08:00" />
+<meta itemprop="wordCount" content="818">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Makefile"/>
+<meta name="twitter:description" content=""/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Haormj</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">类别</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Haormj</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">类别</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Makefile</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-07-13 </span>
+        
+          <span class="more-meta"> 约 818 字 </span>
+          <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#headline-1">Why</a>
+</li>
+<li><a href="#headline-2">参考</a>
+</li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h2 id="headline-1">
+Why
+</h2>
+<p>
+为什么会出现 make? 
+</p>
+<p>
+出现的初衷是为了编译 c 程序? 还是 c++程序,为了解决当项目太大的时候,繁琐的编辑工作
+</p>
+<p>
+出现的初衷就是为了解决 c 和 c++编译繁琐的问题
+</p>
+<p>
+当前也可以解决其他程序编译的问题
+</p>
+<p>
+为什么编译 go 的时候,都不需要呢?
+</p>
+<p>
+因为 go build 直接就可以提供一个二进制,根本不需要编译其他的文件
+</p>
+<p>
+不像 c/c++一样,使用到了其他内容,需要开发者需要编译,链接使用的库
+</p>
+<p>
+这些工作 go build 直接帮你完成,从而 go 的开发者会轻松很多,不需要管很多内容
+</p>
+<p>
+从而对于 go 而言,如果自己除了编译还有其他工作要完成
+</p>
+<p>
+例如编译二进制,拷贝配置文件,生成安装包等内容,是否通过脚本就可以实现呢?
+</p>
+<p>
+当然可以,执行脚本,然后执行指定的内容,例如编译 例如将二进制上传到制品库,这些都是需要的
+</p>
+<p>
+这些操作当然可以通过 shell 脚本完成,但是当然也可以通过 make 完成
+</p>
+<p>
+起码不需要写一堆 case,因为 make 已经帮你做了
+</p>
+<p>
+可以实现相同的目的,而且让你的脚本更少,而且可以直接打包,不过这个感觉也没什么
+</p>
+<p>
+但是有一点是可以更加的通用,因为这基本上对于 c 和 c++项目都是必须的
+</p>
+<p>
+从而对于有基础的人而言应该也没有什么成本,也能够达到目的,这样至少对于打包可执行文件有了统一的做法
+</p>
+<p>
+对于我而言
+</p>
+<ol>
+<li>
+<p>
+更加通用
+</p>
+</li>
+<li>
+<p>
+减少项目中的脚本
+</p>
+</li>
+<li>
+<p>
+目前为了方便有 build.sh pando.sh 但是有了 Makefile 之后就不需要这么多了
+</p>
+</li>
+<li>
+<p>
+更加熟悉 Makefile/make,让自己对于之前 c/c++的编程不在是那么的排斥
+</p>
+</li>
+</ol>
+<p>
+熟悉了这些内容后,基本上就是如何写 Makefile, 以及更加优美的写 Makefile 了
+</p>
+<p>
+以及自己的最佳实践,这样就足够了
+</p>
+<p>
+make 是什么?
+</p>
+<p>
+make 从程序源文件生成可执行文件和其他非源文件.
+</p>
+<p>
+make 解决了什么问题? 我是否会用到 make?
+</p>
+<p>
+首先先注意
+</p>
+<p>
+为什么需要 make?
+</p>
+<p>
+为什么不用脚本代替 make?
+</p>
+<p>
+用的人多
+</p>
+<p>
+make
+</p>
+<p>
+在我看来 Makefile 就是一组脚本的集合,这样就能够完美解决,不在需要那么多的脚本了
+</p>
+<p>
+至少在编辑和将二进制打包上传上面,makefile 是没有任何问题的,而且可以保证在每次编译后
+</p>
+<p>
+都能够保持项目的干净,不会造成任何污染
+</p>
+<p>
+make/Makefile
+</p>
+<p>
+iptables/netfilter 系列
+</p>
+<p>
+如果是这样的话,为什么不用 shell 替代 make
+</p>
+<h2 id="headline-2">
+参考
+</h2>
+<ol>
+<li>
+<p>
+<a href="http://www.ruanyifeng.com/blog/2015/02/make.html">Make 命令教程</a> 
+</p>
+</li>
+<li>
+<p>
+<code class="verbatim">man make</code>
+</p>
+</li>
+<li>
+<p>
+<a href="https://en.wikipedia.org/wiki/Make_(software)">Make (software)</a>
+</p>
+</li>
+<li>
+<p>
+<a href="https://stackoverflow.com/questions/3798562/why-use-make-over-a-shell-script">Why use make over a shell script?</a>
+</p>
+</li>
+<li>
+<p>
+<a href="https://www.gnu.org/software/make/manual/make.html">GNU make</a>  
+</p>
+</li>
+</ol>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Ward Harris</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-07-13
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/netfilter/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">netfilter</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/editor/">
+            <span class="next-text nav-default">编辑器</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:haormj@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/haormj" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/haormj" class="iconfont icon-github" title="github"></a>
+  <a href="https://haormj.xyz/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+    
+    
+    
+    
+    
+    
+    
+    
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Ward Harris</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

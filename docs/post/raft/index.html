@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Raft - haormj</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Ward Harris" /><meta name="description" content=" 分布式一致性算法
+" /><meta name="keywords" content="haormj, blog, IT" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.0 with theme even" />
+
+
+<link rel="canonical" href="https://haormj.xyz/post/raft/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Raft" />
+<meta property="og:description" content="
+分布式一致性算法" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://haormj.xyz/post/raft/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2019-10-20T16:12:05+08:00" />
+<meta property="article:modified_time" content="2019-10-20T16:12:05+08:00" />
+
+<meta itemprop="name" content="Raft">
+<meta itemprop="description" content="
+分布式一致性算法"><meta itemprop="datePublished" content="2019-10-20T16:12:05+08:00" />
+<meta itemprop="dateModified" content="2019-10-20T16:12:05+08:00" />
+<meta itemprop="wordCount" content="1075">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Raft"/>
+<meta name="twitter:description" content="
+分布式一致性算法"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Haormj</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">类别</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Haormj</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">类别</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Raft</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-10-20 </span>
+        
+          <span class="more-meta"> 约 1075 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#headline-1">问题</a>
+</li>
+<li><a href="#headline-2">案例</a>
+</li>
+<li><a href="#headline-3">关键点</a>
+</li>
+<li><a href="#headline-4">原理</a>
+<ul>
+<li><a href="#headline-5">角色</a>
+</li>
+<li><a href="#headline-6">说明</a>
+</li>
+</ul>
+</li>
+<li><a href="#headline-7">结论</a>
+</li>
+<li><a href="#headline-8">拓展</a>
+</li>
+<li><a href="#headline-9">参考</a>
+</li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>
+分布式一致性算法</p>
+<div id="outline-container-headline-1" class="outline-3">
+<h3 id="headline-1">
+问题
+</h3>
+<div id="outline-text-headline-1" class="outline-text-3">
+<ol>
+<li>为什么需要分布式一致性算法?</li>
+<li>raft 是如何工作的?</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-headline-2" class="outline-3">
+<h3 id="headline-2">
+案例
+</h3>
+<div id="outline-text-headline-2" class="outline-text-3">
+<p>
+你接到一个需求,需要做一个人大代表投票系统,用户通过前端页面对候选人进行投票,在后端服务内存中记录每个候选人的票数,投票结束后将数据最终结果提供给领导,由领导宣布最终结果.</p>
+<p>
+你接到需求后马上就开始做了,每次收到前端的请求,对相应候选人的票数在内存中加 1,在内部试用的时候,大家开始疯狂投票,投票结束后你将数据提供给领导,领导和内部投票结果一对比发现你这个系统中部分人的票数不对,偏低;你绞尽脑汁排查问题,最后发现是多线程并发没有加锁导致,问题修复后,开始内部测试,没有任何问题.</p>
+<p>
+领导说既然这样我们就先在一个学校试下,在学生投票的时候,中午还可以投票,但是下午就提示服务无法访问,领导大怒,你做的这个系统是个锤子啊,都用不了;你赶快看了下,原来是部署程序的机器网卡坏了,你很无奈,这明显不是我的问题啊,我能有什么办法,但是看着领导的脸色,你赶快开始想解决方案.你想了下,既然一台不行,我就多部署几台不就好了,不过你又想这个投票数据都是在内存中,部署多台机器如何保证数据的一致性呢?</p>
+<p>
+最后你看到了 raft 算法,有强一致性,而且有容错性,在部分机器坏的情况下,也能够让系统正常使用,你在 github 上找了现成的实现,然后导入到自己的系统中,修改完成后,你开了 5 台机器,然后高兴的告诉领导,这次绝对没问题领导勉强在信你一次,在学校再次尝试发现没有问题,然后将让几个省份开始尝试,你看到服务在不断的收到请求,你非常担心服务会挂掉,如果服务挂了,那么怕是就要被辞退了,你看着自己的 5 台服务,突然有一台变为不可用,但是按照 raft 算法 5 台中可以容忍 2 台不可用,你立马开了新的服务器,然后对自己的服务进行迁移,添加新的节点,去除有问题的节点,在过程中系统完全可用,就这样所有的人都投完票,你将结果导出给领导,领导很满意,你从此走向人生巅峰.</p>
+</div>
+</div>
+<div id="outline-container-headline-3" class="outline-3">
+<h3 id="headline-3">
+关键点
+</h3>
+<div id="outline-text-headline-3" class="outline-text-3">
+<ol>
+<li>进程内可以通过锁来保证数据的一致性</li>
+<li>分布式系统就需要通过一致性算法来保证</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-headline-4" class="outline-3">
+<h3 id="headline-4">
+原理
+</h3>
+<div id="outline-text-headline-4" class="outline-text-3">
+<p>
+<img src="/images/2019/20191020/raft-node-state.jpg" alt="/images/2019/20191020/raft-node-state.jpg" title="/images/2019/20191020/raft-node-state.jpg" /></p>
+<div id="outline-container-headline-5" class="outline-4">
+<h4 id="headline-5">
+角色
+</h4>
+<div id="outline-text-headline-5" class="outline-text-4">
+<ol>
+<li>leader: 领导人</li>
+<li>candidate: 候选人</li>
+<li>follower: 追随者</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-headline-6" class="outline-4">
+<h4 id="headline-6">
+说明
+</h4>
+<div id="outline-text-headline-6" class="outline-text-4">
+<ol>
+<li>在每一期选举中每个节点只有一票</li>
+<li>candidate 都会将票投给自己</li>
+<li>在刚开始没有 leader 的时,每个节点超时时间不同,谁先超时就开始发起选举</li>
+<li>candidate 获取的票数大于当前节点总数的一半,则变为 leader</li>
+<li>如果多个 candidate 获取的票数相同,则需要开始下轮选举</li>
+<li>如果 candidate 收到投票请求,且对方的任期比自己的大的时候,就变为追随者</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-7" class="outline-3">
+<h3 id="headline-7">
+结论
+</h3>
+<div id="outline-text-headline-7" class="outline-text-3">
+<ol>
+<li>分布式系统可以提高系统的容错性,但是同时也会带来数据不一致的问题,而分布式一致性算法主要解决这个问题</li>
+<li>raft 中数据都是有 leader 来同步,且保证了强一致性</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-headline-8" class="outline-3">
+<h3 id="headline-8">
+拓展
+</h3>
+<div id="outline-text-headline-8" class="outline-text-3">
+<ol>
+<li>强一致性</li>
+<li>弱一致性</li>
+<li>最终一致性</li>
+<li>分布式事务</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-headline-9" class="outline-3">
+<h3 id="headline-9">
+参考
+</h3>
+<div id="outline-text-headline-9" class="outline-text-3">
+<ol>
+<li><a href="https://raft.github.io">raft</a></li>
+<li><a href="https://www.infoq.cn/article/raft-paper">Raft 一致性算法论文译文</a></li>
+</ol>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Ward Harris</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-10-20
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/txt/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">最美的诗句</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/openwrt/">
+            <span class="next-text nav-default">Openwrt</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:haormj@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/haormj" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/haormj" class="iconfont icon-github" title="github"></a>
+  <a href="https://haormj.xyz/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    ICP证
+  </span>
+  <span class="division">：</span>
+  <span class="theme-info">
+    <a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备20072194号</a>
+  </span>
+
+  
+
+
+  <span class="copyright-year">
+    &copy; 
+    2019 - 
+    2022<span class="heart"><i class="iconfont icon-heart"></i></span><span>Ward Harris</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
